@@ -1,29 +1,49 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App" />
-  </div>
+	<div>Component Works</div>
 </template>
 
 <script lang="ts">
-import Vue from "vue";
-import HelloWorld from "./components/HelloWorld.vue";
+import gql from 'graphql-tag';
+import { defineComponent } from '@vue/composition-api';
+import { useResult } from '@vue/apollo-composable';
+import * as VueCompositionApi from '@vue/composition-api';
+import * as VueApolloComposable from '@vue/apollo-composable';
 
-export default Vue.extend({
-  name: "App",
-  components: {
-    HelloWorld
-  }
+export type Maybe<T> = T | null | undefined;
+export type GetLoggedInUserQueryVariables = {};
+
+export type GetLoggedInUserQuery = { __typename?: 'Query' } & {
+	me?: {
+		id: string;
+	};
+};
+type ReactiveFunctionGetLoggedInUserQuery = () => GetLoggedInUserQueryVariables;
+export const GetLoggedInUserDocument = gql`
+	query GetLoggedInUser {
+		me {
+			id
+		}
+	}
+`;
+export function useGetLoggedInUserQuery(
+	variables?: GetLoggedInUserQueryVariables | VueCompositionApi.Ref<GetLoggedInUserQueryVariables> | ReactiveFunctionGetLoggedInUserQuery,
+	baseOptions?: VueApolloComposable.UseQueryOptions<GetLoggedInUserQuery, GetLoggedInUserQueryVariables>,
+) {
+	return VueApolloComposable.useQuery<GetLoggedInUserQuery, GetLoggedInUserQueryVariables>(GetLoggedInUserDocument, variables, baseOptions);
+}
+
+export default defineComponent({
+	name: 'App',
+	setup() {
+		const { result } = useGetLoggedInUserQuery();
+
+		const example = useResult(result, null, data => data.me);
+
+		return {
+			example,
+		};
+	},
 });
 </script>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
+<style lang="scss" scoped></style>
